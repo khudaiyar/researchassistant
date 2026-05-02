@@ -5,7 +5,7 @@ import requests
 from ddgs import DDGS
 from database import get_conn
 
-DOWNLOADS_DIR    = os.path.join(os.path.dirname(__file__), "downloads")
+DOWNLOADS_DIR    = "/tmp/downloads"
 _last_downloaded = None   # filename of most recent successful download
 os.makedirs(DOWNLOADS_DIR, exist_ok=True)
 

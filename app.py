@@ -7,7 +7,7 @@ import traceback
 import secrets
 import os
 
-DOWNLOADS_DIR = os.path.join(os.path.dirname(__file__), "downloads")
+DOWNLOADS_DIR = "/tmp/downloads"
 
 app = Flask(__name__)
 app.secret_key = secrets.token_hex(32)
