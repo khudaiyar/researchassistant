@@ -1,7 +1,7 @@
 flask
 flask-cors
 psycopg2-binary
-duckduckgo-search
+ddgs
 requests
 python-dotenv
 gunicorn
