@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin — Friday</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/static/admin.css" />
+</head>
+<body>
+
+<aside class="sidebar">
+  <div class="sidebar-brand">
+    <span class="brand-name">Friday</span>
+    <span class="brand-badge">Admin</span>
+  </div>
+
+  <nav class="sidebar-nav">
+    <a class="nav-item active" href="/admin">
+      <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><rect x="1.5" y="1.5" width="5.5" height="5.5" rx="1" stroke="currentColor" stroke-width="1.3"/><rect x="8" y="1.5" width="5.5" height="5.5" rx="1" stroke="currentColor" stroke-width="1.3"/><rect x="1.5" y="8" width="5.5" height="5.5" rx="1" stroke="currentColor" stroke-width="1.3"/><rect x="8" y="8" width="5.5" height="5.5" rx="1" stroke="currentColor" stroke-width="1.3"/></svg>
+      <span>Overview</span>
+    </a>
+    <a class="nav-item" href="#" onclick="showSection('users')">
+      <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><circle cx="7.5" cy="4.5" r="2.5" stroke="currentColor" stroke-width="1.3"/><path d="M2 13c0-3 2.5-5 5.5-5s5.5 2 5.5 5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+      <span>Users</span>
+    </a>
+    <a class="nav-item" href="/" >
+      <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><path d="M7.5 1L1 6v8h4.5V9.5h4V14H14V6L7.5 1z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg>
+      <span>Back to Friday</span>
+    </a>
+  </nav>
+
+  <div class="sidebar-footer">
+    <div class="user-row">
+      <div class="user-avatar">A</div>
+      <div class="user-info">
+        <span class="user-name">Admin</span>
+        <span class="user-sub">Administrator</span>
+      </div>
+      <button class="signout-btn" onclick="signOut()" title="Sign out">
+        <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
+          <path d="M5 2H2a1 1 0 00-1 1v7a1 1 0 001 1h3M9 9.5l3-3-3-3M12 6.5H5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+</aside>
+
+<main class="main">
+
+  <header class="topbar">
+    <div>
+      <h1 class="page-title">Admin Panel</h1>
+      <p class="page-sub">Manage users, monitor system activity</p>
+    </div>
+  </header>
+
+  <!-- Stats row -->
+  <div class="stats-row" id="stats-row">
+    <div class="stat-card">
+      <span class="stat-num" id="s-users">—</span>
+      <span class="stat-label">Total users</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-num" id="s-papers">—</span>
+      <span class="stat-label">Papers</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-num" id="s-researchers">—</span>
+      <span class="stat-label">Researchers</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-num" id="s-queries">—</span>
+      <span class="stat-label">Total queries</span>
+    </div>
+  </div>
+
+  <!-- Users table -->
+  <section class="section" id="section-users">
+    <div class="section-head">
+      <h2 class="section-title">Users</h2>
+      <input class="search-input" id="user-search" placeholder="Search by name or email…" oninput="filterUsers()" />
+    </div>
+
+    <div class="table-wrap">
+      <table class="data-table" id="users-table">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Role</th>
+            <th>Registered</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="users-body">
+          <tr><td colspan="5" class="loading-row">Loading…</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+</main>
+
+<!-- Confirm delete modal -->
+<div class="modal-backdrop" id="del-backdrop"></div>
+<div class="confirm-modal" id="del-modal">
+  <p class="confirm-title">Delete user?</p>
+  <p class="confirm-sub" id="del-user-name"></p>
+  <p class="confirm-warn">This action cannot be undone.</p>
+  <div class="confirm-btns">
+    <button class="btn-ghost" onclick="closeDelModal()">Cancel</button>
+    <button class="btn-danger" id="del-confirm-btn">Delete</button>
+  </div>
+</div>
+
+<script src="/static/admin.js"></script>
+</body>
+</html>
