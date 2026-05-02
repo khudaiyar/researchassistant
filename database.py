@@ -5,23 +5,21 @@ from urllib.parse import urlparse
 from dotenv import load_dotenv
 load_dotenv()
 
-DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://localhost/research_assistant")
 
-
-def _parse_conn():
-    p = urlparse(DATABASE_URL)
-    return dict(
+def get_conn():
+    url = os.getenv("DATABASE_URL", "")
+    if not url:
+        raise RuntimeError("DATABASE_URL environment variable is not set")
+    p = urlparse(url)
+    return psycopg2.connect(
         host=p.hostname,
         port=p.port or 5432,
         user=p.username,
         password=p.password,
         dbname=p.path.lstrip('/'),
         sslmode='require',
+        cursor_factory=psycopg2.extras.RealDictCursor
     )
-
-
-def get_conn():
-    return psycopg2.connect(**_parse_conn(), cursor_factory=psycopg2.extras.RealDictCursor)
 
 
 def init_db():
