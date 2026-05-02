@@ -11,10 +11,13 @@
 </head>
 <body>
 
+<div class="mob-overlay" onclick="closeSidebar()"></div>
+
 <!-- ══════════════════════════════ SIDEBAR ══════════════════════════════════ -->
 <aside class="sidebar">
 
   <div class="sidebar-brand">
+    <button class="mob-toggle" id="mob-toggle" onclick="toggleSidebar()">&#9776;</button>
     <span class="brand-name">Atlas</span>
     <span class="brand-badge">AI</span>
   </div>
@@ -260,6 +263,16 @@
 </div>
 
 <script src="/static/app.js"></script>
+<script>
+function toggleSidebar() {
+  document.querySelector('.sidebar').classList.toggle('open');
+  document.querySelector('.mob-overlay').classList.toggle('visible');
+}
+function closeSidebar() {
+  document.querySelector('.sidebar').classList.remove('open');
+  document.querySelector('.mob-overlay').classList.remove('visible');
+}
+</script>
 <footer style="text-align:center;padding:12px;font-size:11px;color:#555;border-top:1px solid #2a2a2a;">
   &copy; 2026 Code by <strong>Khudaiyar</strong>
 </footer>
