@@ -16,6 +16,23 @@ bcrypt.init_app(app)
 app.register_blueprint(auth_bp)
 
 
+@app.route("/debug-db")
+def debug_db():
+    from urllib.parse import urlparse
+    url = os.getenv("DATABASE_URL", "NOT SET")
+    if url == "NOT SET":
+        return jsonify({"error": "DATABASE_URL not set"})
+    p = urlparse(url)
+    return jsonify({
+        "scheme": p.scheme,
+        "host": p.hostname,
+        "port": p.port,
+        "dbname": p.path.lstrip('/'),
+        "has_user": bool(p.username),
+        "has_password": bool(p.password),
+    })
+
+
 @app.route("/")
 def index():
     return render_template("index.html")
