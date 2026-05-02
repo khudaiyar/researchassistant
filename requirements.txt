@@ -1,6 +1,7 @@
 flask
 flask-cors
-pymysql
+psycopg2-binary
 duckduckgo-search
 requests
 python-dotenv
+gunicorn

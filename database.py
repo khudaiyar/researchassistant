@@ -1,47 +1,42 @@
-import pymysql
-from config import DB_HOST, DB_USER, DB_PASSWORD, DB_NAME
+import os
+import psycopg2
+import psycopg2.extras
+from dotenv import load_dotenv
+load_dotenv()
+
+DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://localhost/research_assistant")
 
 
 def get_conn():
-    return pymysql.connect(
-        host=DB_HOST, user=DB_USER, password=DB_PASSWORD,
-        database=DB_NAME, charset="utf8mb4",
-        cursorclass=pymysql.cursors.DictCursor,
-    )
+    return psycopg2.connect(DATABASE_URL, cursor_factory=psycopg2.extras.RealDictCursor)
 
 
 def init_db():
-    # create database if missing
-    root = pymysql.connect(host=DB_HOST, user=DB_USER, password=DB_PASSWORD, charset="utf8mb4")
-    with root.cursor() as cur:
-        cur.execute(f"CREATE DATABASE IF NOT EXISTS `{DB_NAME}` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci")
-    root.close()
-
     conn = get_conn()
     with conn.cursor() as cur:
         cur.execute("""
             CREATE TABLE IF NOT EXISTS users (
-                id            INT AUTO_INCREMENT PRIMARY KEY,
+                id            SERIAL PRIMARY KEY,
                 name          VARCHAR(255) NOT NULL,
                 email         VARCHAR(255) NOT NULL UNIQUE,
                 password_hash VARCHAR(255) NOT NULL,
-                is_admin      TINYINT(1) DEFAULT 0,
+                is_admin      BOOLEAN DEFAULT FALSE,
                 created_at    TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+            )
         """)
         cur.execute("""
             CREATE TABLE IF NOT EXISTS researchers (
-                id            INT AUTO_INCREMENT PRIMARY KEY,
+                id            SERIAL PRIMARY KEY,
                 name          VARCHAR(255) NOT NULL,
                 affiliation   VARCHAR(500),
                 research_area VARCHAR(500),
                 email         VARCHAR(255),
                 created_at    TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+            )
         """)
         cur.execute("""
             CREATE TABLE IF NOT EXISTS papers (
-                id            INT AUTO_INCREMENT PRIMARY KEY,
+                id            SERIAL PRIMARY KEY,
                 title         VARCHAR(1000) NOT NULL,
                 authors       TEXT,
                 abstract      TEXT,
@@ -49,29 +44,27 @@ def init_db():
                 venue         VARCHAR(500),
                 doi           VARCHAR(255),
                 url           VARCHAR(1000),
-                researcher_id INT,
-                created_at    TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                FOREIGN KEY (researcher_id) REFERENCES researchers(id) ON DELETE SET NULL
-            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+                researcher_id INT REFERENCES researchers(id) ON DELETE SET NULL,
+                created_at    TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
         """)
         cur.execute("""
             CREATE TABLE IF NOT EXISTS local_files (
-                id          INT AUTO_INCREMENT PRIMARY KEY,
+                id          SERIAL PRIMARY KEY,
                 filename    VARCHAR(500) NOT NULL,
                 filepath    VARCHAR(1000),
                 description TEXT,
-                paper_id    INT,
-                created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                FOREIGN KEY (paper_id) REFERENCES papers(id) ON DELETE SET NULL
-            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+                paper_id    INT REFERENCES papers(id) ON DELETE SET NULL,
+                created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
         """)
         cur.execute("""
             CREATE TABLE IF NOT EXISTS search_history (
-                id         INT AUTO_INCREMENT PRIMARY KEY,
+                id         SERIAL PRIMARY KEY,
                 query      TEXT NOT NULL,
                 response   TEXT,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+            )
         """)
     conn.commit()
     conn.close()
@@ -147,8 +140,8 @@ def seed_admin(bcrypt_instance):
             return
         pw_hash = bcrypt_instance.generate_password_hash(ADMIN_PASSWORD).decode("utf-8")
         cur.execute(
-            "INSERT INTO users (name, email, password_hash, is_admin) VALUES (%s,%s,%s,1)",
-            ("Admin", ADMIN_EMAIL, pw_hash),
+            "INSERT INTO users (name, email, password_hash, is_admin) VALUES (%s,%s,%s,%s)",
+            ("Admin", ADMIN_EMAIL, pw_hash, True),
         )
     conn.commit()
     conn.close()
