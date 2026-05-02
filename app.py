@@ -10,10 +10,19 @@ import os
 DOWNLOADS_DIR = "/tmp/downloads"
 
 app = Flask(__name__)
-app.secret_key = secrets.token_hex(32)
+app.secret_key = os.environ.get('SECRET_KEY', secrets.token_hex(32))
 CORS(app, supports_credentials=True)
 bcrypt.init_app(app)
 app.register_blueprint(auth_bp)
+
+# Initialize DB tables and seed data on startup
+with app.app_context():
+    try:
+        init_db()
+        seed_db()
+        seed_admin(bcrypt)
+    except Exception as e:
+        print(f"[DB INIT] Warning: {e}")
 
 
 @app.route("/debug-db")
