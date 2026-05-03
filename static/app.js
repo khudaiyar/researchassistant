@@ -260,7 +260,7 @@ function appendMsg(role, text, opts = {}) {
   const div = document.createElement("div");
   div.className = `msg ${role}${opts.error ? " error" : ""}`;
 
-  const speaker   = role === "user" ? "You" : "Friday";
+  const speaker   = role === "user" ? "You" : "Atlas";
   const reasoning = opts.showReasoning
     ? `<button class="reasoning-link" onclick="openPanel('reasoning')">
          <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
