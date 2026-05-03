@@ -428,12 +428,24 @@ function setLoggedIn(name, email, is_admin = false) {
   document.getElementById("user-email-label").textContent = email;
   const adminLink = document.getElementById("admin-nav-link");
   if (adminLink) adminLink.style.display = is_admin ? "flex" : "none";
+  // Mobile topbar
+  const mobSignin = document.getElementById("mob-signin-btn");
+  const mobUser   = document.getElementById("mob-user-row");
+  const mobName   = document.getElementById("mob-user-name");
+  if (mobSignin) mobSignin.style.display = "none";
+  if (mobUser)   mobUser.style.display   = "flex";
+  if (mobName)   mobName.textContent     = name;
 }
 
 function setLoggedOut() {
   currentUser = null;
   document.getElementById("open-auth-btn").style.display = "flex";
   document.getElementById("user-row").style.display      = "none";
+  // Mobile topbar
+  const mobSignin = document.getElementById("mob-signin-btn");
+  const mobUser   = document.getElementById("mob-user-row");
+  if (mobSignin) mobSignin.style.display = "flex";
+  if (mobUser)   mobUser.style.display   = "none";
 }
 
 /* ── Auth: open / close modal ─────────────────────────────────────────────── */

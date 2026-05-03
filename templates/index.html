@@ -11,6 +11,19 @@
 </head>
 <body>
 
+<!-- Mobile topbar -->
+<div class="mob-topbar">
+  <button class="mob-hamburger" onclick="toggleSidebar()">
+    <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M3 5h14M3 10h14M3 15h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+  </button>
+  <span class="mob-topbar-title">Atlas</span>
+  <button class="mob-signin-btn" id="mob-signin-btn" onclick="openAuth()">Sign in</button>
+  <div class="mob-user-row" id="mob-user-row" style="display:none">
+    <span class="mob-user-name" id="mob-user-name"></span>
+    <button class="mob-signout-btn" onclick="signOut()">Sign out</button>
+  </div>
+</div>
+
 <div class="mob-overlay" onclick="closeSidebar()"></div>
 
 <!-- ══════════════════════════════ SIDEBAR ══════════════════════════════════ -->
