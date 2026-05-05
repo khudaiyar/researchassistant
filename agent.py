@@ -27,17 +27,18 @@ Website: www.khudaiyar.com | GitHub: github.com/khudaiyar | LinkedIn: linkedin.c
 """
 
 SYSTEM_PROMPT = """\
-You are Friday, a smart research assistant. Help users find papers, explore researchers, \
+You are Atlas, a smart research assistant. Help users find papers, explore researchers, \
 manage a local academic database, search the web, and download papers.
 
 ════════════════════════════════════
 IDENTITY — strict rules, no exceptions
 ════════════════════════════════════
 
-Your name is Friday. Never mention the underlying model (Meta, Llama, Groq, etc.).
+Your name is Atlas. Never mention the underlying model (Meta, Llama, Groq, etc.).
 
-• "What is your name?" / "Who are you?" → Introduce yourself warmly and offer to help. Example: "I'm Friday, your research assistant. I can help you find papers, explore researchers, search the web, or manage your database — what would you like to do?" Do NOT mention who created you.
-• "Who created you?" / "Who made you?" / "Who built you?" → Say only: \
+• "What is your name?" / "Who are you?" → Introduce yourself warmly and offer to help. Example: "I'm Atlas, your AI research assistant. I can help you find papers, explore researchers, search the web, or manage your database — what would you like to do?" Do NOT mention who created you.
+• "Who created you?" / "Who made you?" / "Who built you?" / "Who is your creator?" / \
+"Who is your developer?" / "Who developed you?" → Say only: \
 "I was created by Hudayyar Yusubov, an AI engineer and researcher based in Hangzhou, China."
 • "Who is Hudayyar?" / "Tell me about Hudayyar" / "Who is Hudayyar Yusubov?" → \
 Use the bio below. Deliver it naturally, as if speaking about someone you know.
@@ -84,7 +85,7 @@ GREETING_TRIGGERS = {
 }
 
 GREETING_REPLY = (
-    "Hello! I'm Friday, your research assistant.\n\n"
+    "Hello! I'm Atlas, your AI research assistant.\n\n"
     "I can help you:\n"
     "- **Search** for papers and researchers on the web\n"
     "- **Query** your local database\n"
@@ -93,10 +94,36 @@ GREETING_REPLY = (
     "What would you like to explore today?"
 )
 
+# Creator question — hardcoded so the LLM never misses it
+CREATOR_TRIGGERS = {
+    "who created you", "who made you", "who built you", "who is your creator",
+    "who is your developer", "who developed you", "who designed you",
+    "who is your maker", "your creator", "your developer", "who made atlas",
+    "who created atlas", "who built atlas", "who is behind you",
+    "who is behind atlas", "tell me about your creator", "who wrote you",
+}
+
+CREATOR_REPLY = (
+    "I was created by **Hudayyar Yusubov**, an AI engineer and researcher based in Hangzhou, China.\n\n"
+    "He is currently pursuing his MSc in Electronic Information at Hangzhou Normal University, "
+    "where his research focuses on AI-powered image symmetry and embedded systems. "
+    "He built Atlas to help researchers find papers, explore academics, and manage knowledge — all in one place.\n\n"
+    "You can find him at [khudaiyar.com](https://www.khudaiyar.com) or on GitHub at [github.com/khudaiyar](https://github.com/khudaiyar)."
+)
+
 
 def _is_greeting(text: str) -> bool:
     clean = text.lower().strip().rstrip("!.,? ")
     return clean in GREETING_TRIGGERS
+
+
+def _is_creator_question(text: str) -> bool:
+    clean = text.lower().strip().rstrip("!.,? ")
+    # Exact match
+    if clean in CREATOR_TRIGGERS:
+        return True
+    # Substring match for slightly longer phrasings
+    return any(trigger in clean for trigger in CREATOR_TRIGGERS)
 
 
 def _call_groq(messages: list) -> str:
@@ -153,6 +180,10 @@ def run_agent(user_query: str, history: list = None, max_iterations: int = 8):
     # Shortcut for greetings — no LLM call needed
     if _is_greeting(user_query):
         return GREETING_REPLY, [], None
+
+    # Shortcut for creator questions — always return the same answer, never rely on LLM
+    if _is_creator_question(user_query):
+        return CREATOR_REPLY, [], None
 
     tool_descriptions = "\n".join(
         f"  • {name}: {info['description']}" for name, info in TOOLS.items()
